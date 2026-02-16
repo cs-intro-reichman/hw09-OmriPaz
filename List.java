@@ -30,20 +30,38 @@ public class List {
 
     /** GIVE Adds a CharData object with the given character to the beginning of this list. */
     public void addFirst(char chr) {
-        // Your code goes here
+        CharData cd = new CharData(chr);
+        Node nd = new Node(cd, this.first);
+        this.first = nd;
+        this.size++;
     }
     
     /** GIVE Textual representation of this list. */
+    @Override
     public String toString() {
-        // Your code goes here
-        return "";
+        String str = "(";
+        Node dummy = first;
+        for (int i = 0; i < this.size; i++) {
+            str += dummy;
+            if (i < this.size - 1) {
+                str += " ";
+            }
+            dummy = dummy.next;
+        }
+        return str + ")";
     }
 
     /** Returns the index of the first CharData object in this list
      *  that has the same chr value as the given char,
      *  or -1 if there is no such object in this list. */
     public int indexOf(char chr) {
-        // Your code goes here
+        Node dummy = first;
+        for (int i = 0; i < this.size; i++) {
+            if (dummy.cp.equals(chr)) {return i;}
+            else {
+                dummy = dummy.next;
+            }
+        }
         return -1;
     }
 
@@ -51,14 +69,39 @@ public class List {
      *  increments its counter. Otherwise, adds a new CharData object with the
      *  given chr to the beginning of this list. */
     public void update(char chr) {
-        // Your code goes here
+       Node dummy = first;
+        for (int i = 0; i < this.size; i++) {
+            if (dummy.cp.equals(chr)) {
+                dummy.cp.count++;
+                return;
+            }
+            dummy = dummy.next;
+       }
+       CharData cd = new CharData(chr);
+       Node new_node = new Node(cd, this.first);
+       this.first = new_node;
+       this.size++;
     }
 
     /** GIVE If the given character exists in one of the CharData objects
      *  in this list, removes this CharData object from the list and returns
      *  true. Otherwise, returns false. */
     public boolean remove(char chr) {
-        // Your code goes here
+        Node dummy = first;
+        if (dummy.cp.equals(chr)) {
+            this.first = dummy.next;
+            this.size--;
+            return true;
+        }
+        for (int i = 0; i < this.size - 1; i++) {
+            if (dummy.next.cp.equals(chr)) { // Remove dummy.next
+                Node new_next = dummy.next.next;
+                dummy.next = new_next;
+                this.size--;
+                return true;
+            }
+            dummy = dummy.next;
+        }
         return false;
     }
 
@@ -66,8 +109,14 @@ public class List {
      *  If the index is negative or is greater than the size of this list, 
      *  throws an IndexOutOfBoundsException. */
     public CharData get(int index) {
-        // Your code goes here
-        return null;
+        if (index >= this.size || index < 0) {
+            throw new IndexOutOfBoundsException();
+        }
+        Node dummy = first;
+        for (int i = 0; i < index; i++) {
+            dummy = dummy.next;
+        }
+        return dummy.cp;
     }
 
     /** Returns an array of CharData objects, containing all the CharData objects in this list. */

@@ -33,31 +33,70 @@ public class LanguageModel {
 
     /** Builds a language model from the text in the given file (the corpus). */
 	public void train(String fileName) {
-		// Your code goes here
+		String window = "";
+        In in = new In(fileName);
+        for (int i = 0; i < this.windowLength; i++) {
+            window += in.readChar();
+        }
+        while (!in.isEmpty()) {
+            char c = in.readChar();
+            List probs = CharDataMap.get(window);
+            if (probs == null) {
+                probs = new List();
+                CharDataMap.put(window, probs);
+            }
+            probs.update(c);
+            window = window.substring(1) + c;
+        }
+        for (List probs : CharDataMap.values()) {
+            calculateProbabilities(probs);
+        }
 	}
 
     // Computes and sets the probabilities (p and cp fields) of all the
 	// characters in the given list. */
 	void calculateProbabilities(List probs) {				
-		// Your code goes here
+		int totalCount = 0;
+        for (int i = 0; i < probs.getSize(); i++) {
+            CharData cd = probs.get(i);
+            totalCount += cd.count;
+        }
+        for (int i = 0; i < probs.getSize(); i++) {
+            CharData cd = probs.get(i);
+            cd.p = (double) cd.count / totalCount;
+            cd.cp = cd.p;
+            for (int j = 0; j < i; j++) {
+                cd.cp += probs.get(j).p;
+            }
+        }
 	}
 
     // Returns a random character from the given probabilities list.
 	char getRandomChar(List probs) {
-		// Your code goes here
-		return ' ';
+		double randomDouble = randomGenerator.nextDouble();
+        for (int i = 0; i < probs.getSize(); i++) {
+            CharData cd = probs.get(i);
+            if (cd.cp >= randomDouble) {
+                return cd.chr;
+            }
+        }
+        return probs.getFirst().chr;  // Should not reach here
 	}
 
-    /**
-	 * Generates a random text, based on the probabilities that were learned during training. 
-	 * @param initialText - text to start with. If initialText's last substring of size numberOfLetters
-	 * doesn't appear as a key in Map, we generate no text and return only the initial text. 
-	 * @param numberOfLetters - the size of text to generate
-	 * @return the generated text
-	 */
 	public String generate(String initialText, int textLength) {
-		// Your code goes here
-        return "";
+        String text = initialText;
+        int count = 0;
+        while (count < textLength) {
+            String window = text.substring(text.length() - windowLength, text.length());
+            if (!CharDataMap.containsKey(window)) {
+                return text;
+            }
+            List probs = CharDataMap.get(window);
+            char randomChar = getRandomChar(probs);
+            text += randomChar;
+            count++;
+        }
+        return text;
 	}
 
     /** Returns a string representing the map of this language model. */
@@ -72,5 +111,39 @@ public class LanguageModel {
 
     public static void main(String[] args) {
 		// Your code goes here
+        int windowLength = Integer.parseInt(args[0]);
+        String initialText = args[1];
+        int generateTextLength = Integer.parseInt(args[2]);
+        Boolean randomGeneration = args[3].equals("random");
+        String filename = args[4];
+
+        LanguageModel lm;
+        if (randomGeneration) {
+            lm = new LanguageModel(windowLength);
+        } else {
+            lm = new LanguageModel(windowLength, 20);
+        }
+        lm.train(filename);
+        System.out.println(lm.generate(initialText, generateTextLength));
+    }
+
+    public static boolean contains(int val, int[] arr) {
+        return containsRecur(val, arr, 0, arr.length);
+    }
+
+    public static boolean containsRecur(int val, int[] arr, int l, int r) {
+        if (l > r) {return false;}
+        int mid = (l+r) / 2;
+        if (arr[mid] == val) {return true;}
+        if (arr[mid] > val) {
+            return containsRecur(val, arr, l, mid -1);
+        }
+        else {
+            return containsRecur(val, arr, mid + 1, r);
+        }
     }
 }
+
+
+
+
