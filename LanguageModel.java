@@ -126,4 +126,24 @@ public class LanguageModel {
         lm.train(filename);
         System.out.println(lm.generate(initialText, generateTextLength));
     }
+
+    public static boolean contains(int val, int[] arr) {
+        return containsRecur(val, arr, 0, arr.length);
+    }
+
+    public static boolean containsRecur(int val, int[] arr, int l, int r) {
+        if (l > r) {return false;}
+        int mid = (l+r) / 2;
+        if (arr[mid] == val) {return true;}
+        if (arr[mid] > val) {
+            return containsRecur(val, arr, l, mid -1);
+        }
+        else {
+            return containsRecur(val, arr, mid + 1, r);
+        }
+    }
 }
+
+
+
+
