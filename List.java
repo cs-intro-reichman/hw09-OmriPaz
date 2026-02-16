@@ -33,17 +33,19 @@ public class List {
         CharData cd = new CharData(chr);
         Node nd = new Node(cd, this.first);
         this.first = nd;
+        this.size++;
     }
     
     /** GIVE Textual representation of this list. */
     @Override
     public String toString() {
+        String str = "";
         Node dummy = first;
         for (int i = 0; i < this.size; i++) {
-            System.err.print(dummy);
+            str += dummy;
             dummy = dummy.next;
         }
-        return "";
+        return str;
     }
 
     /** Returns the index of the first CharData object in this list
@@ -52,7 +54,7 @@ public class List {
     public int indexOf(char chr) {
         Node dummy = first;
         for (int i = 0; i < this.size; i++) {
-            if (first.cp.equals(chr)) {return i;}
+            if (dummy.cp.equals(chr)) {return i;}
             else {
                 dummy = dummy.next;
             }
@@ -95,6 +97,7 @@ public class List {
                 this.size--;
                 return true;
             }
+            dummy = dummy.next;
         }
         return false;
     }
@@ -103,7 +106,7 @@ public class List {
      *  If the index is negative or is greater than the size of this list, 
      *  throws an IndexOutOfBoundsException. */
     public CharData get(int index) {
-        if (index > this.size || index < 0) {
+        if (index >= this.size || index < 0) {
             throw new IndexOutOfBoundsException();
         }
         Node dummy = first;
