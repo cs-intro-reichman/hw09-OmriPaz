@@ -39,13 +39,16 @@ public class List {
     /** GIVE Textual representation of this list. */
     @Override
     public String toString() {
-        String str = "";
+        String str = "(";
         Node dummy = first;
         for (int i = 0; i < this.size; i++) {
             str += dummy;
+            if (i < this.size - 1) {
+                str += " ";
+            }
             dummy = dummy.next;
         }
-        return str;
+        return str + ")";
     }
 
     /** Returns the index of the first CharData object in this list
